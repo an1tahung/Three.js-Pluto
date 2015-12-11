@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8>
+    <title>Venus</title>
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100% }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script src="three.min.js"></script>
+    <script src="TrackballControls.js"></script>
+    <script>
+      // Our Javascript will go here.
+      var container, group;
+      var camera, scene, renderer;
+      var cameraControls;
+      var clock = new THREE.Clock();
+
+      init();
+      animate();
+
+      function init(){
+        container = document.getElementById( 'container' );
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/ window.innerHeight, 0.1, 10000); 
+        camera.position.z = 5;
+        group = new THREE.Group();
+        scene.add( group );
+        renderer = new THREE.WebGLRenderer();
+        camera.lookAt(group.position);
+
+        cameraControls = new THREE.TrackballControls(camera, renderer.domElement);
+        cameraControls.target.set(0, 0, 0);
+   
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+        camera.position.z = 1;
+
+        var light = new THREE.AmbientLight( 0x888888 )
+        group.add( light )
+
+        var light = new THREE.DirectionalLight( 0xcccccc, 1 )
+        light.position.set(10,3,5)
+        group.add( light )
+
+        var texloader = new THREE.TextureLoader();
+        var texture = texloader.load('images/venusmap.jpg');
+        var bump = texloader.load('images/venusbump.jpg')
+        var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.01 });
+        var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+        var planet = new THREE.Mesh( geometry, material );
+        container.appendChild( renderer.domElement );
+    
+        group.add( planet );
+        group.add(camera);
+        group.rotation.y = Date.now() * 0.001;
+      }
+
+      function animate() {
+        var delta = clock.getDelta();
+        requestAnimationFrame(animate);
+        cameraControls.update(delta);
+        renderer.render( scene, camera ); 
+      }
+
+    </script>
+  </body>
+</html>
+
+
